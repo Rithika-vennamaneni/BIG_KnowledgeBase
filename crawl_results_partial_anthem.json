@@ -1,0 +1,133 @@
+{
+  "united_healthcare": {
+    "payer": "United Healthcare",
+    "crawl_timestamp": "2025-11-20T16:28:39.753401",
+    "base_url": "https://www.uhcprovider.com/",
+    "extracted_content": {
+      "pages_visited": [
+        {
+          "url": "https://www.uhcprovider.com/en/prior-auth-advance-notification.html",
+          "title": "\n    Prior authorization and notification | UHCprovider.com\n  ",
+          "content_type": "prior_authorization",
+          "extracted_rules": [],
+          "crawl_timestamp": "2025-11-20T16:28:23.644471"
+        },
+        {
+          "url": "https://www.uhcprovider.com/en/prior-auth-advance-notification.html",
+          "title": "\n    Prior authorization and notification | UHCprovider.com\n  ",
+          "content_type": "prior_authorization",
+          "extracted_rules": [],
+          "crawl_timestamp": "2025-11-20T16:28:28.921354"
+        }
+      ],
+      "content_summary": {},
+      "prior_authorization": {
+        "rules": [],
+        "documents": []
+      },
+      "timely_filing": {
+        "rules": [],
+        "documents": []
+      },
+      "appeals": {
+        "rules": [],
+        "documents": []
+      }
+    },
+    "pdf_documents": [
+      {
+        "source_url": "https://www.uhc.com/content/dam/uhcdotcom/en/npp/OSPP-UHCPROVIDER-COM-EN.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/united_healthcare/2025-11/OSPP-UHCPROVIDER-COM-EN_20251120_222834.pdf",
+        "filename": "OSPP-UHCPROVIDER-COM-EN.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://www.uhc.com/content/dam/uhcdotcom/en/npp/TOU-UHCPROVIDER-COM-EN.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/united_healthcare/2025-11/TOU-UHCPROVIDER-COM-EN_20251120_222837.pdf",
+        "filename": "TOU-UHCPROVIDER-COM-EN.pdf",
+        "status": "uploaded"
+      }
+    ],
+    "metadata": {
+      "total_pages_crawled": 2,
+      "total_pdfs_uploaded": 2,
+      "content_types_found": []
+    }
+  },
+  "anthem": {
+    "payer": "Anthem/Elevance Health",
+    "crawl_timestamp": "2025-11-20T16:29:20.452418",
+    "base_url": "https://providers.anthem.com/",
+    "extracted_content": {
+      "pages_visited": [],
+      "content_summary": {},
+      "prior_authorization": {
+        "rules": [],
+        "documents": []
+      },
+      "timely_filing": {
+        "rules": [],
+        "documents": []
+      },
+      "appeals": {
+        "rules": [],
+        "documents": []
+      }
+    },
+    "pdf_documents": [
+      {
+        "source_url": "https://files.providernews.anthem.com/1661/2022-Provider-Manual-pages-44-113.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/2022-Provider-Manual-pages-44-113_20251120_222851.pdf",
+        "filename": "2022-Provider-Manual-pages-44-113.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://providers.anthem.com/docs/gpp/OH_CAID_ProviderManual.pdf?v=202210032112",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/OH_CAID_ProviderManual.pdfv202210032112_20251120_222854.pdf",
+        "filename": "OH_CAID_ProviderManual.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://providers.anthem.com/docs/gpp/NY_ABC_CAID_ProviderManual.pdf?v=202501161732",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/NY_ABC_CAID_ProviderManual.pdfv202501161732_20251120_222859.pdf",
+        "filename": "NY_ABC_CAID_ProviderManual.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://providers.anthem.com/docs/gpp/OH_CAID_ClaimsEscalation.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/OH_CAID_ClaimsEscalation_20251120_222902.pdf",
+        "filename": "OH_CAID_ClaimsEscalation.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://providers.anthem.com/docs/gpp/NV_CAID_PriorAuthreq006648-22.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/NV_CAID_PriorAuthreq006648-22_20251120_222905.pdf",
+        "filename": "NV_CAID_PriorAuthreq006648-22.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://providers.anthem.com/docs/gpp/VA_CAID_ProviderManual.pdf?v=202105212022",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/VA_CAID_ProviderManual.pdfv202105212022_20251120_222909.pdf",
+        "filename": "VA_CAID_ProviderManual.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://providers.anthem.com/docs/gpp/california-provider/CA_CAID_ProviderManual.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/CA_CAID_ProviderManual_20251120_222914.pdf",
+        "filename": "CA_CAID_ProviderManual.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://providers.anthem.com/docs/gpp/WI_CAID_Provider_Manual.pdf?v=202504111439",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/anthem/2025-11/WI_CAID_Provider_Manual.pdfv202504111439_20251120_222917.pdf",
+        "filename": "WI_CAID_Provider_Manual.pdf",
+        "status": "uploaded"
+      }
+    ],
+    "metadata": {
+      "total_pages_crawled": 0,
+      "total_pdfs_uploaded": 8,
+      "content_types_found": []
+    }
+  }
+}

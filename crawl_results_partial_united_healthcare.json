@@ -1,0 +1,57 @@
+{
+  "united_healthcare": {
+    "payer": "United Healthcare",
+    "crawl_timestamp": "2025-11-20T16:28:39.753401",
+    "base_url": "https://www.uhcprovider.com/",
+    "extracted_content": {
+      "pages_visited": [
+        {
+          "url": "https://www.uhcprovider.com/en/prior-auth-advance-notification.html",
+          "title": "\n    Prior authorization and notification | UHCprovider.com\n  ",
+          "content_type": "prior_authorization",
+          "extracted_rules": [],
+          "crawl_timestamp": "2025-11-20T16:28:23.644471"
+        },
+        {
+          "url": "https://www.uhcprovider.com/en/prior-auth-advance-notification.html",
+          "title": "\n    Prior authorization and notification | UHCprovider.com\n  ",
+          "content_type": "prior_authorization",
+          "extracted_rules": [],
+          "crawl_timestamp": "2025-11-20T16:28:28.921354"
+        }
+      ],
+      "content_summary": {},
+      "prior_authorization": {
+        "rules": [],
+        "documents": []
+      },
+      "timely_filing": {
+        "rules": [],
+        "documents": []
+      },
+      "appeals": {
+        "rules": [],
+        "documents": []
+      }
+    },
+    "pdf_documents": [
+      {
+        "source_url": "https://www.uhc.com/content/dam/uhcdotcom/en/npp/OSPP-UHCPROVIDER-COM-EN.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/united_healthcare/2025-11/OSPP-UHCPROVIDER-COM-EN_20251120_222834.pdf",
+        "filename": "OSPP-UHCPROVIDER-COM-EN.pdf",
+        "status": "uploaded"
+      },
+      {
+        "source_url": "https://www.uhc.com/content/dam/uhcdotcom/en/npp/TOU-UHCPROVIDER-COM-EN.pdf",
+        "azure_url": "https://insurancepdfstorage.blob.core.windows.net/pdfs/united_healthcare/2025-11/TOU-UHCPROVIDER-COM-EN_20251120_222837.pdf",
+        "filename": "TOU-UHCPROVIDER-COM-EN.pdf",
+        "status": "uploaded"
+      }
+    ],
+    "metadata": {
+      "total_pages_crawled": 2,
+      "total_pdfs_uploaded": 2,
+      "content_types_found": []
+    }
+  }
+}

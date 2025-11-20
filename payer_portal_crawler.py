@@ -8,6 +8,7 @@ This module crawls healthcare payer portals and uploads PDFs to Azure Storage
 
 import time
 import json
+import re
 import pandas as pd
 from datetime import datetime, timedelta
 from pathlib import Path
