@@ -791,6 +791,17 @@ def main():
         if crawler:
             crawler.close()
 
+integration = CrawlerIntegration(AZURE_CONNECTION_STRING)
+pipeline = integration.pipeline
+
+stats = pipeline.process_pdf_batch(
+    pdf_paths=results['pdfs_downloaded'],
+    payer_name="anthem",
+    source_urls=results.get('source_urls', [])
+)
+
+print(f"Processed {stats['total_policies']} policies")
+print(f"Current active policies: {stats['cleanup']['current_policies']}")
 
 if __name__ == "__main__":
     main()

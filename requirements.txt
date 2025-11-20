@@ -69,3 +69,8 @@ psycopg2-binary
 
 azure-storage-blob>=12.19.0
 python-dotenv>=1.0.0
+
+# Add these for Azure OCR + Storage
+azure-ai-documentintelligence==1.0.0b1
+azure-storage-blob>=12.19.0
+python-dotenv>=1.0.0
