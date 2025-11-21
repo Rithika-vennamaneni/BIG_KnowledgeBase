@@ -16,7 +16,7 @@ SIMILARITY_THRESHOLD = 0.85
 DEFAULT_POLICY_TTL_DAYS = 730  # 2 years
 
 # Anthropic API (optional, for LLM-based extraction)
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", None)
+#ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", None)
 
 # Directories
 TEMP_PDF_DIR = "./temp_pdfs"
