@@ -1,0 +1,40 @@
+{
+  "crawl_timestamp": "2025-11-21 17:42:41",
+  "target_rules": [
+    "timely_filing",
+    "prior_authorization",
+    "billing_nuances",
+    "appeals"
+  ],
+  "company_processed": "Aetna",
+  "total_targeted_pdfs": 0,
+  "pdfs_by_rule_type": {},
+  "results": {
+    "company_name": "Aetna",
+    "targeted_pdfs": [],
+    "all_links": [
+      {
+        "url": "https://es.aetna.com/health-care-professionals/prior-authorization.html",
+        "text": "Espa\u00f1ol",
+        "depth": 0
+      },
+      {
+        "url": "https://es.aetna.com/health-care-professionals/prior-authorization.html",
+        "text": "Espa\u00f1ol",
+        "depth": 0
+      },
+      {
+        "url": "https://www.aetna.com/individuals-families/member-rights-resources/complaints-grievances-appeals.html",
+        "text": "File a grievance or appeal",
+        "depth": 0
+      },
+      {
+        "url": "https://www.aetna.com/individuals-families/member-rights-resources/claims-coverage/aetna-external-review-program.html",
+        "text": "See Aetna's External Review Program",
+        "depth": 0
+      }
+    ],
+    "total_targeted_pdfs": 0,
+    "urls_visited": 10
+  }
+}

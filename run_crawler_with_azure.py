@@ -1,11 +1,12 @@
 """
-Wrapper to run existing crawler with Azure integration
+Wrapper to run targeted crawler with Azure integration
 """
-from payer_portal_crawler import PayerPortalCrawler
-from azure_integration import PDFToStructuredPipeline
-from config import AZURE_CONNECTION_STRING
 import sys
 import os
+
+from azure_integration import PDFToStructuredPipeline
+from config import AZURE_CONNECTION_STRING
+from targeted_healthcare_crawler import TargetedHealthcareRuleCrawler
 
 def download_pdfs_from_azure(blob_service, container_name, local_dir="./temp_pdfs"):
     """Download PDFs from Azure to process them locally"""
@@ -35,9 +36,13 @@ def main(payer_name="anthem"):
     
     print(f"Starting crawler for: {payer_name}")
     
-    # Step 1: Run your existing crawler (uploads to Azure)
-    crawler = PayerPortalCrawler()
-    results = crawler.crawl_payer(payer_name)
+    crawler = TargetedHealthcareRuleCrawler(headless=True, max_depth=2)
+    
+    try:
+        # Step 1: Run targeted crawler (uploads to Azure via AzurePDFUploader)
+        crawl_results = crawler.crawl_targeted_companies([payer_name])
+    finally:
+        crawler.close()
     
     print(f"\n{'='*60}")
     print("PROCESSING WITH DEDUPLICATION")

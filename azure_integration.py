@@ -5,11 +5,14 @@ Connects PDF crawler → OCR/Extraction → Deduplication → Azure Storage
 
 import os
 import json
+import re
+import textwrap
 from typing import List, Dict
 from datetime import datetime
 from azure.storage.blob import BlobServiceClient
 import PyPDF2
 import fitz  # PyMuPDF
+from huggingface_hub import InferenceClient
 
 # Import your existing crawler (adjust path as needed)
 # from payer_portal_crawler import PayerPortalCrawler
@@ -43,6 +46,20 @@ class PDFToStructuredPipeline:
         # Container for raw PDFs
         self.pdf_container = "raw-pdfs"
         self._ensure_container(self.pdf_container)
+        # Container for JSON outputs
+        self.json_container = os.getenv("AZURE_JSON_CONTAINER", "policy-json")
+        self._ensure_container(self.json_container)
+
+        # Hugging Face client for policy JSON extraction
+        self.hf_model = os.getenv("HF_POLICY_MODEL", "microsoft/Phi-3.5-mini-instruct")
+        hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+        self.hf_client = None
+        if hf_token:
+            try:
+                self.hf_client = InferenceClient(model=self.hf_model, token=hf_token)
+                print(f"Hugging Face client initialized: {self.hf_model}")
+            except Exception as e:
+                print(f"Warning: could not initialize HF client: {e}")
     
     def _ensure_container(self, container_name: str):
         """Ensure Azure container exists"""
@@ -50,6 +67,63 @@ class PDFToStructuredPipeline:
             self.blob_service.create_container(container_name)
         except Exception:
             pass
+
+    def generate_policy_json_with_hf(self, text: str, payer_name: str, source_pdf: str) -> Dict:
+        """Use HF model to extract structured policy JSON"""
+        if not self.hf_client:
+            return {}
+
+        prompt = textwrap.dedent(f"""
+        You are a healthcare policy extractor. Read the policy text and return ONLY compact JSON with these keys:
+        policy_id (string), policy_type (prior_auth|timely_filing|appeals|claims|billing|coverage|unknown),
+        effective_date (YYYY-MM-DD or null), end_date (YYYY-MM-DD or null),
+        supersedes (array of strings), summary (string), payer_name (string),
+        source_pdf (string).
+
+        Payer: "{payer_name}"
+        Source PDF: "{source_pdf}"
+
+        Policy text (may be truncated):
+        {text[:6000]}
+
+        JSON only, no prose, no code fences.
+        """).strip()
+
+        try:
+            resp = self.hf_client.text_generation(
+                prompt=prompt,
+                max_new_tokens=600,
+                temperature=0.2,
+                do_sample=False,
+                stop=["</s>", "```"]
+            )
+            cleaned = resp.strip().strip("`")
+            return json.loads(cleaned)
+        except Exception as e:
+            print(f"HF extraction failed: {e}")
+            return {}
+
+    def upload_json_to_azure(self, data: Dict, payer_name: str, source_pdf: str) -> str:
+        """Upload extracted JSON to dedicated container"""
+        try:
+            blob_name = f"{payer_name}/{os.path.splitext(source_pdf)[0]}.json"
+            blob_client = self.blob_service.get_blob_client(
+                container=self.json_container,
+                blob=blob_name
+            )
+            blob_client.upload_blob(
+                json.dumps(data, indent=2),
+                overwrite=True,
+                metadata={
+                    "payer_name": payer_name,
+                    "source_pdf": source_pdf,
+                    "uploaded_at": datetime.utcnow().isoformat()
+                }
+            )
+            return blob_client.url
+        except Exception as e:
+            print(f"Failed to upload JSON for {source_pdf}: {e}")
+            return ""
     
     def extract_text_from_pdf(self, pdf_path: str) -> tuple[str, Dict]:
         """
@@ -162,34 +236,48 @@ class PDFToStructuredPipeline:
             print(f"No text extracted from {pdf_path}")
             return []
         
-        # Step 2: Extract rules
-        rules = self.extract_rules_from_text(raw_text, payer_name)
-        
-        if not rules:
-            print(f"No rules found in {pdf_path}")
-            return []
-        
-        print(f"Extracted {len(rules)} rules from PDF")
-        
-        # Step 3: Process each rule through deduplication engine
+        # Step 2: Try HF policy JSON extraction
+        policy_json = self.generate_policy_json_with_hf(
+            text=raw_text,
+            payer_name=payer_name,
+            source_pdf=os.path.basename(pdf_path)
+        )
+
+        if not policy_json:
+            # Fallback to regex rules if HF failed
+            rules = self.extract_rules_from_text(raw_text, payer_name)
+            if not rules:
+                print(f"No rules found in {pdf_path}")
+                return []
+            # Use first rule as content for metadata
+            policy_json = rules[0]
+
+        # Upload JSON representation
+        json_url = self.upload_json_to_azure(policy_json, payer_name, os.path.basename(pdf_path))
+        if json_url:
+            print(f"Uploaded policy JSON to Azure: {json_url}")
+
+        # Step 3: Process through deduplication engine
         policies = []
-        for rule in rules:
+        try:
+            policy_metadata = self.dedup_engine.process_extracted_policy(
+                content=policy_json,
+                raw_text=raw_text,
+                source_pdf=os.path.basename(pdf_path),
+                source_url=source_url,
+                payer_name=payer_name
+            )
+            
+            # Step 4: Remove replaced/expired versions, then save to Azure
             try:
-                policy_metadata = self.dedup_engine.process_extracted_policy(
-                    content=rule,
-                    raw_text=raw_text,
-                    source_pdf=os.path.basename(pdf_path),
-                    source_url=source_url,
-                    payer_name=payer_name
-                )
-                
-                # Step 4: Save to Azure immediately
-                self.dedup_engine.save_to_azure(policy_metadata)
-                policies.append(policy_metadata)
-                
+                self.dedup_engine.remove_replaced_policies(policy_metadata)
             except Exception as e:
-                print(f"Error processing rule: {e}")
-                continue
+                print(f"Warning: could not remove replaced policies: {e}")
+            self.dedup_engine.save_to_azure(policy_metadata)
+            policies.append(policy_metadata)
+            
+        except Exception as e:
+            print(f"Error processing policy: {e}")
         
         print(f"Created {len(policies)} policy metadata objects")
         

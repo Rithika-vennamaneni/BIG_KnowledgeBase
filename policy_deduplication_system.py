@@ -13,6 +13,7 @@ from collections import defaultdict
 import anthropic
 from azure.storage.blob import BlobServiceClient
 from difflib import SequenceMatcher
+import logging
 
 
 @dataclass
@@ -193,6 +194,7 @@ class PolicyDeduplicationEngine:
         self.blob_service = BlobServiceClient.from_connection_string(azure_connection_string)
         self.container_name = container_name
         self.extractor = PolicyIDExtractor()
+        self.logger = logging.getLogger(__name__)
         
         # Ensure containers exist
         self._ensure_containers()
@@ -365,6 +367,68 @@ class PolicyDeduplicationEngine:
             json.dumps(data, indent=2),
             overwrite=True
         )
+
+    def _deserialize_policy(self, data: Dict) -> PolicyMetadata:
+        """Convert stored JSON back into PolicyMetadata"""
+        for key in ['effective_date', 'end_date', 'document_date', 'crawl_timestamp']:
+            if data.get(key):
+                data[key] = datetime.fromisoformat(data[key])
+            else:
+                data[key] = None
+        return PolicyMetadata(**data)
+
+    def _load_policies_for_payer(self, payer_name: str) -> List[PolicyMetadata]:
+        """Load all policies for a payer from the active container"""
+        container_client = self.blob_service.get_container_client(self.container_name)
+        policies = []
+
+        prefix = f"{payer_name}/"
+        for blob in container_client.list_blobs(name_starts_with=prefix):
+            blob_client = self.blob_service.get_blob_client(
+                container=self.container_name,
+                blob=blob.name
+            )
+            try:
+                data = json.loads(blob_client.download_blob().readall())
+                policies.append(self._deserialize_policy(data))
+            except Exception as e:
+                self.logger.warning(f"Failed to read blob {blob.name}: {e}")
+        return policies
+
+    def _delete_blob(self, blob_name: str):
+        """Delete a blob from the active container"""
+        try:
+            container_client = self.blob_service.get_container_client(self.container_name)
+            container_client.delete_blob(blob_name)
+            self.logger.info(f"Deleted expired/replaced policy blob: {blob_name}")
+        except Exception as e:
+            self.logger.warning(f"Failed to delete blob {blob_name}: {e}")
+
+    def remove_replaced_policies(self, new_policy: PolicyMetadata):
+        """
+        Remove expired policies for the same payer + policy_type that are superseded by the new one.
+        """
+        if not new_policy.payer_name or not new_policy.policy_type:
+            return
+
+        existing = self._load_policies_for_payer(new_policy.payer_name)
+        now = datetime.now()
+
+        for old in existing:
+            if old.policy_id == new_policy.policy_id:
+                continue
+            if old.policy_type != new_policy.policy_type:
+                continue
+
+            # Determine if old policy should be removed
+            old_expired = old.end_date and old.end_date < now
+            superseded_by_date = (
+                old.end_date and new_policy.effective_date and old.end_date < new_policy.effective_date
+            )
+
+            if old_expired or superseded_by_date:
+                blob_name = f"{old.payer_name}/{old.policy_id}.json"
+                self._delete_blob(blob_name)
     
     def load_all_policies(self) -> List[PolicyMetadata]:
         """Load all policies from Azure storage"""
