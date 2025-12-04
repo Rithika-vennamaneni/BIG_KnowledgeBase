@@ -200,7 +200,7 @@ company_name,base_domain,known_provider_portal,priority,market_share
 
 ---
 
-## 🔧 **Advanced Features**
+##  **Advanced Features**
 
 ### **Quality Filtering** (`intelligent_pdf_filter.py`)
 ```python
